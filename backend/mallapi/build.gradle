@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.8'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'org.zerock'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	implementation 'org.modelmapper:modelmapper:3.1.1' //dot -> 엔티티 처리 용
+
+	implementation 'net.coobird:thumbnailator:0.4.19' //섬네일 처리용
+
+	implementation 'org.springframework.boot:spring-boot-starter-security' // 스프링 시큐리티용
+	
+	implementation 'com.google.code.gson:gson:2.10.1' // 로그인 성공 후 json 데이터 생성
+
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api jwt용 의존성 주입
+	
+	// API 서버는 API 호출에 대해서 상태를 유지하지 않고, 세션이나 쿠키를 사용할 수도 없다.
+	// API 호출시 인증된 사용자를 확인하는 방법으로 JWT(JSON Web Token) 문자열과 같은 문자열 토큰 기반의 인증을 사용함
+	// JWT는 헤더+페이로드+서명으로 구성됨
+	// 서명과 유효시간을 지정할 수 있어 실무에서 가장 많이 사용함
+	// API 서버는 사용자의 상태를 유지하지 않기 때문에 JWT와 같은 토큰을 매번 같이 전송해서 인증을 확인함(Access Token)
+	// Refresh Token : 토큰 유효기간을 짧게 지정하는데 이를 나중에 갱신하는 토큰 (OAuth2에서 사용: 소셜로그인)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+
+}
+
+tasks.named('bootBuildImage') {
+	builder = 'paketobuildpacks/builder-jammy-base:latest'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
